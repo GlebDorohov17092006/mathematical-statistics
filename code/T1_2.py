@@ -55,7 +55,7 @@ def coefficients_regression_and_determination(X: np.ndarray, Y: np.ndarray, a: f
     p_values.sort()
     significance_beta = [1 for _ in range(X.shape[1])]
     for i in range(X.shape[1]):
-        significance_beta[p_values[i][1]] = (p_values[i][0] < a/(X.shape[1] - i))
+        significance_beta[p_values[i][1]] = (p_values[i][0] < a)
 
     Y_mean = np.mean(Y)
     TSS = np.sum((Y - Y_mean) ** 2)

@@ -271,7 +271,7 @@ def comparison_bootstrap(X: np.ndarray, Y: np.ndarray, p_values: list[tuple[floa
     ci_lower = h_abs - deltas[upper_idx]
     ci_upper = h_abs - deltas[lower_idx]
     
-    return ci_lower <= 0 <= ci_upper
+    return ci_lower < 0 < ci_upper
 
 X, Y = generation_sample(50)
 
@@ -279,9 +279,14 @@ multicollinearity_result = is_multicollinearity(X)
 print("a) Мультиколлинеарность (True - оставляем, False - отбрасываем):\n", multicollinearity_result)
 
 beta, significance_beta, R2, significance_R2, p_values = coefficients_regression_and_determination(X, Y)
+
 print("\nb) Коэффициенты регрессии:")
+
+p_values_dict = {idx: p_val for p_val, idx in p_values}
+
 for i, coef in enumerate(beta):
-    print(f"   β{i}: {coef:.4f}, значим: {significance_beta[i]}, p_value = {p_values[i][0]}")
+    p_val = p_values_dict[i]
+    print(f"   β{i}: {coef:.4f}, значим: {significance_beta[i]}, p_value = {p_val:.6f}")
 print(f"   R² = {R2:.4f}, значимость R²: {significance_R2}")
 
 y0_pred, ci = value_and_confidence_interval(X, Y, beta)
@@ -312,10 +317,12 @@ beta_new, significance_beta_new, R2_new, significance_R2_new, p_values_new, min_
 print(f"\nj) Удаляем переменную ξ{min_p_idx} (p-value = {min_p_val:.6f})")
 print(f"   H0: удаленная переменная не значима = {non_significant}")
 print("\nРегрессия после удаления:")
-for i, coef in enumerate(beta_new):
-    print(f"   β{i}: {coef:.4f}, значим: {significance_beta_new[i]}, p-value = {p_values_new[i][0]:.6f}")
-print(f"   R² = {R2_new:.4f}, значимость R²: {significance_R2_new}")
 
+p_values_new_dict = {idx: p_val for p_val, idx in p_values_new}
+for i, coef in enumerate(beta_new):
+    p_val = p_values_new_dict[i]
+    print(f"   β{i}: {coef:.4f}, значим: {significance_beta_new[i]}, p-value = {p_val:.6f}")
 result_bootstrap = comparison_bootstrap(X, Y, p_values)
+
 print("\nk) Бутстреп сравнение регрессий:")
 print(f"   Модели не различаются значимо (ноль внутри ДИ): {result_bootstrap}")
